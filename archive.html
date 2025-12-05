@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive of the Forgotten</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">ARCHIVE OF THE FORGOTTEN</h1>
+            <p class="subtitle">A monument to the act of communication, not its content</p>
+            <a href="index.html" class="archive-link" style="margin-top: 1rem;">
+                <i class="fas fa-arrow-left"></i> Return to the Ephemeral Engine
+            </a>
+        </header>
+
+        <div class="archive-intro">
+            <div class="message-icon">
+                <i class="fas fa-monument"></i>
+            </div>
+            <h2>The Paradox of Remembering Forgetting</h2>
+            <p>This archive does not contain the messages themselves, they are gone as intended. Instead, it records the <em>fact</em> of their forgetting: the when, the how, and the why.</p>
+            <p>Each entry below represents a communication that has passed through the Ephemeral Engine and been subjected to its designed decay.</p>
+        </div>
+
+        <div class="archive-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalForgotten">0</div>
+                <div class="stat-label">Total Communications Forgotten</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="mostCommonAlgo">-</div>
+                <div class="stat-label">Most Common Forgetting Process</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="firstForgotten">-</div>
+                <div class="stat-label">First Recorded Forgetting</div>
+            </div>
+        </div>
+
+        <div class="archive-controls">
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="oral">Oral Tradition</button>
+                <button class="filter-btn" data-filter="sand">Sand Drawing</button>
+                <button class="filter-btn" data-filter="burn">Burned Letter</button>
+                <button class="filter-btn" data-filter="corrupt">Corrupted File</button>
+                <button class="filter-btn" data-filter="autodelete">Auto-Delete</button>
+                <button class="filter-btn" data-filter="hallucinate">AI Hallucination</button>
+            </div>
+            <button class="archive-btn" id="clearArchive">
+                <i class="fas fa-trash"></i> Clear Archive
+            </button>
+        </div>
+
+        <div class="archive-entries" id="archiveEntries">
+            <!-- Entries will be loaded here -->
+            <div class="empty-archive" id="emptyArchive">
+                <div class="message-icon">
+                    <i class="fas fa-wind"></i>
+                </div>
+                <h3>The Archive is Empty</h3>
+                <p>No communications have been forgotten yet.</p>
+                <p>Return to the Ephemeral Engine to create entries.</p>
+            </div>
+        </div>
+
+        <div class="archive-theory">
+            <h3><i class="fas fa-scroll"></i> Theoretical Context</h3>
+            <div class="theory-content">
+                <p>This archive embodies the central argument of <em>When the Medium Forgets: A Theory of Communication Technologies With Memory Loss</em>:</p>
+                <blockquote>
+                    "Forgetting is not accidental or unfortunate but instead a designed, necessary, and culturally meaningful aspect of the history of communication."
+                </blockquote>
+                <p>By archiving only the metadata of forgetting (never the content) we create a record that respects the ephemerality of the original communication while acknowledging its historical existence.</p>
+                <p>This is the politics of memory in action: deciding <em>what</em> gets remembered (the act) and <em>what</em> gets forgotten (the content).</p>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p class="footer-note">
+                "The archive of forgetting remembers only that something was forgotten—a testament to communication's inherent ephemerality."
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const archiveEntries = document.getElementById('archiveEntries');
+            const emptyArchive = document.getElementById('emptyArchive');
+            const totalForgotten = document.getElementById('totalForgotten');
+            const mostCommonAlgo = document.getElementById('mostCommonAlgo');
+            const firstForgotten = document.getElementById('firstForgotten');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const clearArchiveBtn = document.getElementById('clearArchive');
+
+            let archive = JSON.parse(localStorage.getItem('ephemeralArchive') || '[]');
+            let currentFilter = 'all';
+
+            // Algorithm names mapping
+            const algorithmNames = {
+                'oral': 'Oral Tradition',
+                'sand': 'Sand Drawing',
+                'burn': 'Burned Letter',
+                'corrupt': 'Corrupted File',
+                'autodelete': 'Auto-Delete',
+                'hallucinate': 'AI Hallucination'
+            };
+
+            // Algorithm descriptions
+            const algorithmDescriptions = {
+                'oral': 'Memory mutated through retelling',
+                'sand': 'Eroded by time and elements',
+                'burn': 'Consumed by protective fire',
+                'corrupt': 'Decayed through data loss',
+                'autodelete': 'Deliberately timed erasure',
+                'hallucinate': 'Replaced by generative memory'
+            };
+
+            // Algorithm icons
+            const algorithmIcons = {
+                'oral': 'fas fa-comments',
+                'sand': 'fas fa-mountain',
+                'burn': 'fas fa-fire',
+                'corrupt': 'fas fa-bug',
+                'autodelete': 'fas fa-hourglass-end',
+                'hallucinate': 'fas fa-brain'
+            };
+
+            // Mode icons
+            const modeIcons = {
+                'text': 'fas fa-font',
+                'draw': 'fas fa-paint-brush',
+                'voice': 'fas fa-microphone'
+            };
+
+            // Load and display archive
+            function loadArchive() {
+                archive = JSON.parse(localStorage.getItem('ephemeralArchive') || '[]');
+                updateStats();
+                displayEntries();
+            }
+
+            function updateStats() {
+                // Total count
+                totalForgotten.textContent = archive.length;
+                
+                // Most common algorithm
+                if (archive.length > 0) {
+                    const algoCount = {};
+                    archive.forEach(entry => {
+                        algoCount[entry.algorithm] = (algoCount[entry.algorithm] || 0) + 1;
+                    });
+                    
+                    let mostCommon = Object.keys(algoCount).reduce((a, b) => 
+                        algoCount[a] > algoCount[b] ? a : b
+                    );
+                    
+                    mostCommonAlgo.textContent = algorithmNames[mostCommon] || mostCommon;
+                    
+                    // First forgotten
+                    const first = archive.reduce((a, b) => 
+                        new Date(a.timestamp) < new Date(b.timestamp) ? a : b
+                    );
+                    const date = new Date(first.timestamp);
+                    firstForgotten.textContent = date.toLocaleDateString();
+                } else {
+                    mostCommonAlgo.textContent = '-';
+                    firstForgotten.textContent = '-';
+                }
+            }
+
+            function displayEntries() {
+                archiveEntries.innerHTML = '';
+                
+                // Filter entries
+                let filteredEntries = archive;
+                if (currentFilter !== 'all') {
+                    filteredEntries = archive.filter(entry => entry.algorithm === currentFilter);
+                }
+                
+                // Reverse to show newest first
+                filteredEntries = [...filteredEntries].reverse();
+                
+                if (filteredEntries.length === 0) {
+                    emptyArchive.style.display = 'block';
+                    return;
+                }
+                
+                emptyArchive.style.display = 'none';
+                
+                filteredEntries.forEach((entry, index) => {
+                    const date = new Date(entry.timestamp);
+                    const entryElement = document.createElement('div');
+                    entryElement.className = 'archive-entry';
+                    
+                    // Add some visual decay based on index (older = more decayed)
+                    const opacity = Math.max(0.3, 1 - (index * 0.03));
+                    
+                    entryElement.innerHTML = `
+                        <div class="entry-header">
+                            <div class="entry-algorithm">
+                                <i class="${algorithmIcons[entry.algorithm] || 'fas fa-question'}"></i>
+                                ${algorithmNames[entry.algorithm] || 'Unknown Process'}
+                            </div>
+                            <div class="entry-date">
+                                <i class="fas fa-clock"></i>
+                                ${date.toLocaleString()}
+                            </div>
+                        </div>
+                        <div class="entry-body">
+                            <div class="entry-mode">
+                                <i class="${modeIcons[entry.mode] || 'fas fa-question'}"></i>
+                                ${entry.mode.toUpperCase()} communication
+                            </div>
+                            <div class="entry-description">
+                                ${algorithmDescriptions[entry.algorithm] || 'A communication was forgotten.'}
+                            </div>
+                        </div>
+                        <div class="entry-footer">
+                            <div class="entry-id">
+                                #${archive.length - filteredEntries.length + index + 1}
+                            </div>
+                            <div class="entry-status">
+                                <i class="fas fa-check-circle"></i> Successfully forgotten
+                            </div>
+                        </div>
+                    `;
+                    
+                    entryElement.style.opacity = opacity;
+                    archiveEntries.appendChild(entryElement);
+                });
+            }
+
+            // Filter buttons
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    currentFilter = button.dataset.filter;
+                    displayEntries();
+                });
+            });
+
+            // Clear archive
+            clearArchiveBtn.addEventListener('click', () => {
+                if (confirm('Clear the entire archive? This action cannot be undone.')) {
+                    localStorage.removeItem('ephemeralArchive');
+                    loadArchive();
+                }
+            });
+
+            // Initial load
+            loadArchive();
+
+            // Add some CSS for archive page
+            const style = document.createElement('style');
+            style.textContent = `
+                .archive-intro {
+                    text-align: center;
+                    margin-bottom: 3rem;
+                    padding: 2rem;
+                    background-color: rgba(212, 165, 116, 0.05);
+                    border-radius: 4px;
+                }
+                
+                .archive-stats {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 1.5rem;
+                    margin-bottom: 3rem;
+                }
+                
+                .stat-card {
+                    background-color: var(--color-surface);
+                    border: 1px solid rgba(212, 165, 116, 0.2);
+                    padding: 1.5rem;
+                    text-align: center;
+                }
+                
+                .stat-number {
+                    font-size: 2.5rem;
+                    font-family: var(--font-mono);
+                    color: var(--color-accent);
+                    margin-bottom: 0.5rem;
+                }
+                
+                .stat-label {
+                    font-size: 0.9rem;
+                    color: var(--color-text-dim);
+                }
+                
+                .archive-controls {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 2rem;
+                    flex-wrap: wrap;
+                    gap: 1rem;
+                }
+                
+                .filter-buttons {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.5rem;
+                }
+                
+                .filter-btn {
+                    background-color: var(--color-surface-light);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    color: var(--color-text);
+                    padding: 0.5rem 1rem;
+                    font-family: var(--font-mono);
+                    font-size: 0.8rem;
+                    cursor: pointer;
+                    transition: var(--transition-fast);
+                }
+                
+                .filter-btn:hover, .filter-btn.active {
+                    background-color: var(--color-accent);
+                    color: var(--color-bg);
+                }
+                
+                .archive-btn {
+                    background-color: rgba(139, 0, 0, 0.3);
+                    border: 1px solid #8b0000;
+                    color: #ff6b6b;
+                    padding: 0.5rem 1rem;
+                    font-family: var(--font-mono);
+                    font-size: 0.8rem;
+                    cursor: pointer;
+                    transition: var(--transition-fast);
+                }
+                
+                .archive-btn:hover {
+                    background-color: rgba(139, 0, 0, 0.5);
+                }
+                
+                .archive-entries {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1rem;
+                    margin-bottom: 3rem;
+                }
+                
+                .archive-entry {
+                    background-color: var(--color-surface);
+                    border: 1px solid rgba(212, 165, 116, 0.1);
+                    padding: 1.5rem;
+                    transition: var(--transition-fast);
+                }
+                
+                .archive-entry:hover {
+                    border-color: rgba(212, 165, 116, 0.3);
+                    transform: translateY(-2px);
+                }
+                
+                .entry-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 1rem;
+                    font-family: var(--font-mono);
+                    font-size: 0.9rem;
+                }
+                
+                .entry-algorithm {
+                    color: var(--color-accent);
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+                
+                .entry-date {
+                    color: var(--color-text-dim);
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+                
+                .entry-body {
+                    margin-bottom: 1rem;
+                }
+                
+                .entry-mode {
+                    color: var(--color-text);
+                    margin-bottom: 0.5rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+                
+                .entry-description {
+                    color: var(--color-text-dim);
+                    font-style: italic;
+                }
+                
+                .entry-footer {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    font-family: var(--font-mono);
+                    font-size: 0.8rem;
+                    border-top: 1px solid rgba(255, 255, 255, 0.05);
+                    padding-top: 0.8rem;
+                }
+                
+                .entry-id {
+                    color: var(--color-text-dim);
+                }
+                
+                .entry-status {
+                    color: #7fb685;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+                
+                .archive-theory {
+                    background-color: rgba(212, 165, 116, 0.05);
+                    border-left: 3px solid var(--color-accent);
+                    padding: 2rem;
+                    margin-top: 3rem;
+                }
+                
+                .theory-content {
+                    margin-top: 1rem;
+                }
+                
+                blockquote {
+                    border-left: 3px solid var(--color-accent);
+                    padding-left: 1.5rem;
+                    margin: 1.5rem 0;
+                    font-style: italic;
+                    color: var(--color-text-dim);
+                }
+                
+                .empty-archive {
+                    text-align: center;
+                    padding: 4rem;
+                    opacity: 0.5;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
