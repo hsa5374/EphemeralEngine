@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Archive | The Ephemeral Engine</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="archive-page">
+    <div class="container">
+        <header class="page-header">
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Return Home
+            </a>
+            <h1>The Archive of Traces</h1>
+            <p class="page-subtitle">Not the memories, but their echoes</p>
+        </header>
+        
+        <div class="archive-intro">
+            <div class="intro-card">
+                <i class="fas fa-monument"></i>
+                <h3>An Archive of Absence</h3>
+                <p>This space doesn't store what was said, but it honors the fact that something was released. Each entry represents a memory that chose forgetting over preservation.</p>
+                <p class="poetic">"We remember only that we have forgotten."</p>
+            </div>
+            
+            <div class="archive-stats">
+                <div class="stat">
+                    <div class="stat-number" id="totalForgotten">0</div>
+                    <div class="stat-label">Memories Released</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="todayForgotten">0</div>
+                    <div class="stat-label">Today</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="archive-entries" id="archiveEntries">
+            <!-- Entries will be loaded here -->
+            <div class="empty-archive" id="emptyArchive">
+                <i class="fas fa-wind"></i>
+                <h3>The Archive is Silent</h3>
+                <p>No memories have been released yet.</p>
+                <a href="invitation.html" class="cta-link">
+                    <i class="fas fa-plus"></i> Be the First
+                </a>
+            </div>
+        </div>
+        
+        <div class="reflection-section">
+            <h2><i class="fas fa-scroll"></i> Reflection</h2>
+            <div class="reflection-content">
+                <p>This archive embodies the central paradox of the project: we create a record of forgetting. But note what's recorded:</p>
+                <ul>
+                    <li><strong>Not the content,</strong>  the memory itself is gone</li>
+                    <li><strong>Not the person,</strong>  no identifiers are stored</li>
+                    <li><strong>Only the trace,</strong>  the fact of forgetting</li>
+                </ul>
+                <blockquote>
+                    "In a world obsessed with preserving every datum, what does it mean to design systems that forget? This archive is a monument to that question."
+                </blockquote>
+            </div>
+        </div>
+        
+        <div class="navigation-links">
+            <a href="invitation.html" class="nav-btn">
+                <i class="fas fa-plus-circle"></i> Release Another Memory
+            </a>
+            <a href="reflection.html" class="nav-btn secondary">
+                <i class="fas fa-book"></i> Read the Theory
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const archiveEntries = document.getElementById('archiveEntries');
+            const emptyArchive = document.getElementById('emptyArchive');
+            const totalForgotten = document.getElementById('totalForgotten');
+            const todayForgotten = document.getElementById('todayForgotten');
+            
+            const algorithmNames = {
+                erosion: 'Erosion',
+                burning: 'Burning',
+                mutation: 'Mutation'
+            };
+            
+            const algorithmIcons = {
+                erosion: 'fas fa-wind',
+                burning: 'fas fa-fire',
+                mutation: 'fas fa-comments'
+            };
+            
+            const algorithmColors = {
+                erosion: '#7fb685',
+                burning: '#ff6b35',
+                mutation: '#9d4edd'
+            };
+            
+            function loadArchive() {
+                const archive = JSON.parse(localStorage.getItem('ephemeralArchive') || '[]');
+                
+                // Update stats
+                totalForgotten.textContent = archive.length;
+                
+                // Count today's entries
+                const today = new Date().toDateString();
+                const todayCount = archive.filter(entry => {
+                    const entryDate = new Date(entry.timestamp).toDateString();
+                    return entryDate === today;
+                }).length;
+                todayForgotten.textContent = todayCount;
+                
+                // Display entries
+                if (archive.length === 0) {
+                    emptyArchive.style.display = 'block';
+                    return;
+                }
+                
+                emptyArchive.style.display = 'none';
+                archiveEntries.innerHTML = '';
+                
+                // Show most recent first
+                const reversed = [...archive].reverse();
+                
+                reversed.forEach((entry, index) => {
+                    const entryElement = document.createElement('div');
+                    entryElement.className = 'archive-entry';
+                    
+                    const date = new Date(entry.timestamp);
+                    const timeAgo = getTimeAgo(date);
+                    
+                    // Create a visual representation based on algorithm
+                    let visual = '';
+                    if (entry.algorithm === 'erosion') {
+                        visual = '<div class="visual-dots">' + '•'.repeat(Math.min(20, Math.ceil(entry.length / 10))) + '</div>';
+                    } else if (entry.algorithm === 'burning') {
+                        visual = '<div class="visual-ashes">' + '~'.repeat(Math.min(15, Math.ceil(entry.length / 15))) + '</div>';
+                    } else {
+                        visual = '<div class="visual-shapes">' + '◇'.repeat(Math.min(10, Math.ceil(entry.length / 20))) + '</div>';
+                    }
+                    
+                    entryElement.innerHTML = `
+                        <div class="entry-header">
+                            <div class="entry-algorithm" style="color: ${algorithmColors[entry.algorithm] || '#ccc'}">
+                                <i class="${algorithmIcons[entry.algorithm] || 'fas fa-question'}"></i>
+                                ${algorithmNames[entry.algorithm] || 'Forgotten'}
+                            </div>
+                            <div class="entry-time">${timeAgo}</div>
+                        </div>
+                        <div class="entry-body">
+                            <div class="entry-trace">
+                                "${entry.trace}"
+                            </div>
+                            ${visual}
+                        </div>
+                        <div class="entry-footer">
+                            <div class="entry-length">
+                                ${entry.length} characters released
+                            </div>
+                            <div class="entry-date">
+                                ${date.toLocaleDateString()} at ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Fade older entries
+                    const opacity = Math.max(0.3, 1 - (index * 0.03));
+                    entryElement.style.opacity = opacity;
+                    
+                    archiveEntries.appendChild(entryElement);
+                });
+            }
+            
+            function getTimeAgo(date) {
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+                
+                if (diffMins < 60) {
+                    return `${diffMins}m ago`;
+                } else if (diffHours < 24) {
+                    return `${diffHours}h ago`;
+                } else if (diffDays < 7) {
+                    return `${diffDays}d ago`;
+                } else {
+                    return date.toLocaleDateString();
+                }
+            }
+            
+            loadArchive();
+        });
+    </script>
+</body>
+</html>

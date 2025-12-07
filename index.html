@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ephemeral Engine | When the Medium Forgets</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="landing-page">
+    <div class="landing-container">
+        <!-- Background Elements -->
+        <div class="fading-text">
+            <span class="fade-word">remember</span>
+            <span class="fade-word">forget</span>
+            <span class="fade-word">archive</span>
+            <span class="fade-word">erase</span>
+            <span class="fade-word">preserve</span>
+            <span class="fade-word">lose</span>
+        </div>
+        
+        <div class="main-content">
+            <div class="title-section">
+                <h1 class="main-title">When the Medium Forgets</h1>
+                <h2 class="subtitle">The Ephemeral Engine</h2>
+                <div class="divider"></div>
+                <p class="intro-text">
+                    Not everything should be remembered forever.<br>
+                    This is a space for intentional forgetting,<br>
+                    a ritual of letting go through digital decay.
+                </p>
+            </div>
+            
+            <div class="invitation-card">
+                <div class="card-header">
+                    <i class="fas fa-hourglass-start"></i>
+                    <h3>The Invitation</h3>
+                </div>
+                <p class="card-text">
+                    What memory, thought, or feeling would you like to release?<br>
+                    Something recent, something old, something that needs to fade.
+                </p>
+                <div class="assurance">
+                    <i class="fas fa-lock"></i>
+                    <span>Your offering will be processed by the engine and then forgotten forever.</span>
+                </div>
+                <a href="invitation.html" class="enter-btn">
+                    Begin the Ritual
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            
+            <div class="theory-preview">
+                <blockquote>
+                    "Forgetting is not accidental or unfortunate but instead a designed, necessary, and culturally meaningful aspect of communication."
+                    <cite>— Barbie Zelizer</cite>
+                </blockquote>
+            </div>
+        </div>
+        
+        <footer class="landing-footer">
+            <p>A digital installation exploring technologies of memory loss</p>
+        </footer>
+    </div>
+    
+    <!-- Sound of gentle wind -->
+    <audio id="windSound" loop>
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-wind-against-leaves-1248.mp3" type="audio/mpeg">
+    </audio>
+    
+    <script src="script.js"></script>
+    <script>
+        // Gentle wind sound
+        window.addEventListener('load', () => {
+            const wind = document.getElementById('windSound');
+            wind.volume = 0.2;
+            wind.play().catch(() => {});
+        });
+        
+        // Fading words effect
+        const words = document.querySelectorAll('.fade-word');
+        let current = 0;
+        
+        setInterval(() => {
+            words.forEach(word => word.classList.remove('active'));
+            words[current].classList.add('active');
+            current = (current + 1) % words.length;
+        }, 2000);
+    </script>
+</body>
+</html>

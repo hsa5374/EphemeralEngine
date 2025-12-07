@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Forgetting | The Ephemeral Engine</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="forgetting-page">
+    <div class="container">
+        <div class="process-header">
+            <h1>The Forgetting Process</h1>
+            <p class="process-subtitle" id="algorithmName">Erosion</p>
+        </div>
+        
+        <div class="memory-display">
+            <div class="memory-container">
+                <div class="memory-label">
+                    <i class="fas fa-pen"></i> Your Memory:
+                </div>
+                <div class="memory-text" id="memoryText">
+                    <!-- Memory will be inserted here -->
+                </div>
+            </div>
+            
+            <div class="process-status">
+                <div class="status-item">
+                    <div class="status-label">Integrity</div>
+                    <div class="status-value" id="integrityValue">100%</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Process</div>
+                    <div class="status-value" id="processStage">Initializing</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="visualization-area">
+            <div class="visualization" id="visualization">
+                <!-- Visualization of forgetting process -->
+            </div>
+            <div class="process-description" id="processDescription">
+                The forgetting has begun. Watch as your memory undergoes transformation.
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="startBtn" class="primary-btn">
+                <i class="fas fa-play"></i> Begin Forgetting
+            </button>
+            <button id="pauseBtn" class="secondary-btn" disabled>
+                <i class="fas fa-pause"></i> Pause
+            </button>
+        </div>
+        
+        <div class="reflection-prompt">
+            <h3><i class="fas fa-brain"></i> As You Watch</h3>
+            <p>Consider: What does it feel like to watch a memory disappear? Is there relief in knowing it won't be preserved? This is the technology of forgetting in action.</p>
+        </div>
+        
+        <div class="navigation">
+            <a href="archive.html" class="nav-link" id="archiveLink" style="display: none;">
+                <i class="fas fa-archive"></i> View Traces in the Archive
+            </a>
+            <a href="index.html" class="nav-link">
+                <i class="fas fa-home"></i> Return Home
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get memory from sessionStorage
+            const memory = sessionStorage.getItem('memoryToForget');
+            const algorithm = sessionStorage.getItem('forgettingAlgorithm') || 'erosion';
+            const submissionTime = sessionStorage.getItem('submissionTime');
+            
+            if (!memory) {
+                window.location.href = 'invitation.html';
+                return;
+            }
+            
+            // Display memory
+            const memoryText = document.getElementById('memoryText');
+            memoryText.textContent = memory;
+            
+            // Display algorithm name
+            const algorithmName = document.getElementById('algorithmName');
+            const algorithmNames = {
+                erosion: 'Erosion (Like Sand in the Wind)',
+                burning: 'Burning (Like a Letter in Flame)',
+                mutation: 'Mutation (Like Stories Retold)'
+            };
+            algorithmName.textContent = algorithmNames[algorithm] || algorithm;
+            
+            // Process description
+            const processDesc = document.getElementById('processDescription');
+            const descriptions = {
+                erosion: 'Each letter will be carried away, grain by grain, until only emptiness remains.',
+                burning: 'Words will curl at the edges, glow with embers, and turn to silent ash.',
+                mutation: 'The memory will transform with each iteration, becoming something new and unfamiliar.'
+            };
+            processDesc.textContent = descriptions[algorithm] || '';
+            
+            // State
+            let isProcessing = false;
+            let integrity = 100;
+            let processInterval;
+            const startBtn = document.getElementById('startBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const integrityValue = document.getElementById('integrityValue');
+            const processStage = document.getElementById('processStage');
+            const archiveLink = document.getElementById('archiveLink');
+            const visualization = document.getElementById('visualization');
+            
+            // Create visualization based on algorithm
+            function createVisualization() {
+                visualization.innerHTML = '';
+                
+                if (algorithm === 'erosion') {
+                    // Create sand particles
+                    for (let i = 0; i < 100; i++) {
+                        const particle = document.createElement('div');
+                        particle.className = 'sand-particle';
+                        particle.style.left = `${Math.random() * 100}%`;
+                        particle.style.top = `${Math.random() * 100}%`;
+                        particle.style.animationDelay = `${Math.random() * 5}s`;
+                        visualization.appendChild(particle);
+                    }
+                } else if (algorithm === 'burning') {
+                    // Create fire effect
+                    for (let i = 0; i < 20; i++) {
+                        const ember = document.createElement('div');
+                        ember.className = 'ember';
+                        ember.style.left = `${Math.random() * 100}%`;
+                        ember.style.animationDelay = `${Math.random() * 3}s`;
+                        visualization.appendChild(ember);
+                    }
+                } else if (algorithm === 'mutation') {
+                    // Create shifting shapes
+                    for (let i = 0; i < 15; i++) {
+                        const shape = document.createElement('div');
+                        shape.className = 'mutation-shape';
+                        shape.style.left = `${Math.random() * 100}%`;
+                        shape.style.top = `${Math.random() * 100}%`;
+                        shape.style.animationDelay = `${Math.random() * 2}s`;
+                        visualization.appendChild(shape);
+                    }
+                }
+            }
+            
+            createVisualization();
+            
+            // Start forgetting process
+            startBtn.addEventListener('click', function() {
+                if (isProcessing) return;
+                
+                isProcessing = true;
+                startBtn.disabled = true;
+                pauseBtn.disabled = false;
+                
+                processInterval = setInterval(() => {
+                    integrity -= 0.5;
+                    integrityValue.textContent = `${Math.max(0, integrity.toFixed(1))}%`;
+                    
+                    // Update process stage
+                    if (integrity > 75) {
+                        processStage.textContent = 'Beginning';
+                    } else if (integrity > 50) {
+                        processStage.textContent = 'Progressing';
+                    } else if (integrity > 25) {
+                        processStage.textContent = 'Advanced';
+                    } else if (integrity > 0) {
+                        processStage.textContent = 'Nearly Complete';
+                    }
+                    
+                    // Apply forgetting effect to text
+                    applyForgettingEffect(integrity);
+                    
+                    // When complete
+                    if (integrity <= 0) {
+                        clearInterval(processInterval);
+                        processStage.textContent = 'Complete';
+                        memoryText.innerHTML = '<em>The memory has been forgotten.</em>';
+                        memoryText.style.opacity = '0.3';
+                        memoryText.style.fontStyle = 'italic';
+                        
+                        // Show archive link
+                        archiveLink.style.display = 'inline-block';
+                        
+                        // Add to archive
+                        addToArchive(memory, algorithm, submissionTime);
+                        
+                        // Play completion sound
+                        const wind = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-wind-against-leaves-1248.mp3');
+                        wind.volume = 0.3;
+                        wind.play();
+                    }
+                }, 50);
+            });
+            
+            // Pause button
+            pauseBtn.addEventListener('click', function() {
+                if (!isProcessing) return;
+                
+                if (processInterval) {
+                    clearInterval(processInterval);
+                    processInterval = null;
+                    pauseBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+                    processStage.textContent = 'Paused';
+                } else {
+                    processInterval = setInterval(() => {
+                        integrity -= 0.5;
+                        integrityValue.textContent = `${Math.max(0, integrity.toFixed(1))}%`;
+                        applyForgettingEffect(integrity);
+                        
+                        if (integrity <= 0) {
+                            clearInterval(processInterval);
+                            processStage.textContent = 'Complete';
+                            memoryText.innerHTML = '<em>The memory has been forgotten.</em>';
+                            archiveLink.style.display = 'inline-block';
+                            addToArchive(memory, algorithm, submissionTime);
+                        }
+                    }, 50);
+                    pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                }
+            });
+            
+            // Apply forgetting effect based on algorithm
+            function applyForgettingEffect(integrity) {
+                const text = memoryText.textContent;
+                
+                if (algorithm === 'erosion') {
+                    // Remove random characters
+                    if (Math.random() < 0.3 && text.length > 10) {
+                        const chars = text.split('');
+                        const removeIndex = Math.floor(Math.random() * chars.length);
+                        if (chars[removeIndex] !== ' ') {
+                            chars[removeIndex] = ' ';
+                            memoryText.textContent = chars.join('');
+                        }
+                    }
+                    // Fade out
+                    memoryText.style.opacity = `${integrity / 100}`;
+                    
+                } else if (algorithm === 'burning') {
+                    // Add burning effect class
+                    memoryText.classList.add('burning-text');
+                    // Char some characters
+                    if (Math.random() < 0.2) {
+                        const chars = text.split('');
+                        for (let i = 0; i < chars.length; i++) {
+                            if (Math.random() < 0.1 && chars[i] !== ' ') {
+                                chars[i] = '~';
+                            }
+                        }
+                        memoryText.textContent = chars.join('');
+                    }
+                    // Fade to black
+                    const darkness = 1 - (integrity / 100);
+                    memoryText.style.color = `rgb(${255 - darkness * 255}, ${200 - darkness * 200}, ${150 - darkness * 150})`;
+                    
+                } else if (algorithm === 'mutation') {
+                    // Mutate text
+                    if (Math.random() < 0.4 && text.length > 5) {
+                        const words = text.split(' ');
+                        if (words.length > 2) {
+                            const changeIndex = Math.floor(Math.random() * words.length);
+                            words[changeIndex] = mutateWord(words[changeIndex]);
+                            memoryText.textContent = words.join(' ');
+                        }
+                    }
+                    // Shift opacity
+                    memoryText.style.opacity = `${0.5 + (integrity / 200)}`;
+                }
+            }
+            
+            function mutateWord(word) {
+                if (word.length < 3) return word;
+                
+                const mutations = {
+                    'the': 'tha', 'and': 'und', 'you': 'yu', 'are': 'r',
+                    'for': 'fer', 'with': 'wth', 'this': 'dis', 'that': 'dat',
+                    'have': 'hav', 'from': 'frum', 'they': 'dey', 'would': 'wud',
+                    'their': 'ther', 'there': 'dere', 'what': 'wut', 'about': 'bout',
+                    'which': 'wich', 'when': 'wen', 'were': 'wir', 'like': 'lik',
+                    'some': 'sum', 'them': 'dem', 'then': 'den', 'than': 'then'
+                };
+                
+                const lowerWord = word.toLowerCase().replace(/[^a-z]/g, '');
+                if (mutations[lowerWord]) {
+                    return mutations[lowerWord];
+                }
+                
+                // Random mutation
+                if (Math.random() < 0.3) {
+                    const chars = word.split('');
+                    const changeIndex = Math.floor(Math.random() * chars.length);
+                    chars[changeIndex] = String.fromCharCode(97 + Math.floor(Math.random() * 26));
+                    return chars.join('');
+                }
+                
+                return word;
+            }
+            
+            function addToArchive(memory, algorithm, timestamp) {
+                let archive = JSON.parse(localStorage.getItem('ephemeralArchive') || '[]');
+                
+                // Only store metadata, not the actual memory
+                const archiveEntry = {
+                    id: Date.now(),
+                    algorithm: algorithm,
+                    timestamp: timestamp,
+                    length: memory.length,
+                    // Store only first and last few characters as poetic trace
+                    trace: memory.length > 20 ? 
+                        memory.substring(0, 3) + '...' + memory.substring(memory.length - 3) : 
+                        '*'.repeat(memory.length)
+                };
+                
+                archive.push(archiveEntry);
+                if (archive.length > 100) archive = archive.slice(-100);
+                localStorage.setItem('ephemeralArchive', JSON.stringify(archive));
+            }
+            
+            // Auto-start after a moment
+            setTimeout(() => {
+                startBtn.click();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

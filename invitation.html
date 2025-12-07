@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Invitation | The Ephemeral Engine</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="invitation-page">
+    <div class="container">
+        <header class="page-header">
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Return
+            </a>
+            <h1>The Invitation</h1>
+            <p class="page-subtitle">What would you like the engine to forget?</p>
+        </header>
+        
+        <div class="instruction-container">
+            <div class="instruction-card">
+                <div class="instruction-icon">
+                    <i class="fas fa-quote-right"></i>
+                </div>
+                <h3>Write Your Memory</h3>
+                <p>Type a memory, thought, regret, wish, or secret you'd like to release. The more personal, the more meaningful the forgetting.</p>
+                <div class="note">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>This will not be saved, archived, or recovered.</span>
+                </div>
+            </div>
+            
+            <div class="memory-types">
+                <h4>Examples of what others have forgotten:</h4>
+                <ul>
+                    <li>A conversation you wish had gone differently</li>
+                    <li>A mistake you're ready to release</li>
+                    <li>A feeling that no longer serves you</li>
+                    <li>A secret you're tired of carrying</li>
+                    <li>A memory that feels too heavy</li>
+                    <li>A worry that keeps you awake</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <div class="input-wrapper">
+                <textarea 
+                    id="memoryInput" 
+                    placeholder="Begin typing your memory here... 
+                    
+It could be a single word, a sentence, or a story.
+When you're ready, we'll begin the process of forgetting." 
+                    rows="8"></textarea>
+                <div class="input-footer">
+                    <div class="char-count">
+                        <span id="charCount">0</span> characters
+                    </div>
+                    <div class="input-note">
+                        <i class="fas fa-exclamation-circle"></i>
+                        You cannot retrieve this after submission
+                    </div>
+                </div>
+            </div>
+            
+            <div class="algorithm-selection">
+                <h3>Choose Your Forgetting Method</h3>
+                <div class="algorithm-cards">
+                    <div class="algo-card selected" data-algorithm="erosion">
+                        <div class="algo-icon">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                        <h4>Erosion</h4>
+                        <p>Like sand writing blown away by wind. Letters gradually disappear.</p>
+                    </div>
+                    
+                    <div class="algo-card" data-algorithm="burning">
+                        <div class="algo-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <h4>Burning</h4>
+                        <p>Like a letter set aflame. Words curl and turn to ash.</p>
+                    </div>
+                    
+                    <div class="algo-card" data-algorithm="mutation">
+                        <div class="algo-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h4>Mutation</h4>
+                        <p>Like oral stories retold. Words change with each iteration.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button id="clearBtn" class="secondary-btn">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+                <button id="submitBtn" class="primary-btn" disabled>
+                    <i class="fas fa-hourglass-end"></i> Begin Forgetting
+                </button>
+            </div>
+            
+            <div class="reassurance">
+                <i class="fas fa-heart"></i>
+                <p>This is a safe space for release. The engine exists only to forget, not to judge or remember.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const memoryInput = document.getElementById('memoryInput');
+            const charCount = document.getElementById('charCount');
+            const submitBtn = document.getElementById('submitBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const algoCards = document.querySelectorAll('.algo-card');
+            
+            let selectedAlgorithm = 'erosion';
+            
+            // Character count
+            memoryInput.addEventListener('input', function() {
+                const count = memoryInput.value.length;
+                charCount.textContent = count;
+                submitBtn.disabled = count === 0;
+            });
+            
+            // Algorithm selection
+            algoCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    algoCards.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedAlgorithm = this.dataset.algorithm;
+                });
+            });
+            
+            // Clear button
+            clearBtn.addEventListener('click', function() {
+                memoryInput.value = '';
+                charCount.textContent = '0';
+                submitBtn.disabled = true;
+                memoryInput.focus();
+            });
+            
+            // Submit button
+            submitBtn.addEventListener('click', function() {
+                const memory = memoryInput.value.trim();
+                if (memory.length === 0) return;
+                
+                // Store in sessionStorage for next page
+                sessionStorage.setItem('memoryToForget', memory);
+                sessionStorage.setItem('forgettingAlgorithm', selectedAlgorithm);
+                sessionStorage.setItem('submissionTime', new Date().toISOString());
+                
+                // Navigate to forgetting page
+                window.location.href = 'forgetting.html';
+            });
+            
+            // Auto-focus textarea
+            memoryInput.focus();
+        });
+    </script>
+</body>
+</html>
